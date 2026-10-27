@@ -24,9 +24,9 @@ jobs:
       TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -39,6 +39,7 @@ jobs:
         run: |
           python trendy_alerta.py --probe adviento
           python trendy_alerta.py --probe calendario
+          python trendy_alerta.py --probe sombra
 
       - name: Revisar la tienda
         if: github.event_name == 'schedule' || inputs.modo == 'revisar'
