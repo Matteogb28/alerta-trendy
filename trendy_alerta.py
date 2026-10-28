@@ -32,6 +32,7 @@ import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE = "https://www.maquillajetrendyshop.com"
@@ -193,6 +194,28 @@ def guardar_estado(estado):
     )
 
 
+# ------------------------------------------------------------------ latido
+def latido(cfg, estado):
+    """Manda un 'sigo vigilando' cada LATIDO_HORAS horas (por defecto 6; 0 lo desactiva)."""
+    try:
+        horas = float(cfg.get("LATIDO_HORAS", "6"))
+    except ValueError:
+        horas = 6.0
+    if horas <= 0:
+        return
+    ahora = time.time()
+    if ahora - estado.get("ultimo_latido", 0) < horas * 3600:
+        return
+    bogota = timezone(timedelta(hours=-5))  # Colombia no tiene horario de verano
+    hora = datetime.now(bogota).strftime("%I:%M %p").lstrip("0")
+    msg = (
+        f"🟢 Sigo vigilando la tienda Trendy. Ultima revision: {hora}.\n"
+        "Todavia sin novedades del calendario de adviento; te aviso apenas aparezca."
+    )
+    if enviar_telegram(cfg, msg):
+        estado["ultimo_latido"] = ahora
+
+
 # ------------------------------------------------------------------ ciclo
 def revisar(cfg, estado):
     avisos = []
@@ -269,11 +292,7 @@ def bucle(cfg):
                 )
                 estado["avisado_fallo"] = True
 
-        # Latido diario para saber que sigue vivo
-        if time.time() - estado["ultimo_latido"] > 24 * 3600:
-            if estado["ultimo_latido"]:
-                enviar_telegram(cfg, "🟢 Sigo vigilando Trendy. Sin novedades.")
-            estado["ultimo_latido"] = time.time()
+        latido(cfg, estado)
 
         guardar_estado(estado)
         time.sleep(intervalo + random.uniform(0, 20))
@@ -307,6 +326,7 @@ def main():
     if args.una_vez:
         estado = cargar_estado()
         revisar(cfg, estado)
+        latido(cfg, estado)
         guardar_estado(estado)
         return
 
