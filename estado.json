@@ -1,5 +1,10 @@
 {
-  "productos": {},
+  "productos": {
+    "1047": {
+      "nombre": "Calendario de Adviento Wonderland – Edición Luxury",
+      "disponible": false
+    }
+  },
   "fragmentos": [
     "https://www.maquillajetrendyshop.com/ :: ,\"map\":[]},\"vtex.store@2.x:store.custom#calendario-de-adviento\":{\"allowconditions\":true,\"c",
     "https://www.maquillajetrendyshop.com/ :: ,\"map\":[]},\"vtex.store@2.x:store.custom#calendario-de-adviento-nick-90s\":{\"allowconditions",
